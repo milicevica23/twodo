@@ -1,0 +1,81 @@
+---
+openapi: "3.0.0"
+info:
+  description: |
+    Test tide app
+  version: "1.0.0"
+  title: Test app
+  contact:
+    email: "milicoa97@gmail.com"
+  license:
+    name: "AGPL v3.0"
+    url: "https://www.gnu.org/licenses/agpl-3.0.en.html"
+servers:
+  - url: 'http://localhost:8000'
+    description: Local dev server
+
+tags:
+- name: 'test'
+  description: ''
+
+paths:
+  '/api/v1/projects/{name}':
+    post:
+      tags:
+        - 'server'
+      summary: 'Trigger execution for this project'
+      description:
+      parameters:
+        - in: path
+          name: name
+          required: true
+          example: 'janky'
+          schema:
+            type: string
+      responses:
+        404:
+          summary: 'No project configured by that name'
+        200:
+          summary: 'Execution has been triggered'
+
+
+  '/api/v1/capabilities':
+    get:
+      tags:
+        - 'agent'
+      summary: "Retrieve a list of capabilities of this agent"
+      description:
+      responses:
+        200:
+          description: Getting capabilities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapsResponse'
+  '/api/v1/execute':
+    put:
+      tags:
+        - 'agent'
+      summary: "Execute a series of commands on this agent"
+      description:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandRequest'
+            example:
+              commands:
+                - script: 'echo "Hi"'
+      responses:
+        201:
+          description: 'Successfully accepted the commands for execution'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandResponse'
+        409:
+          description: 'Returned when the agent is busy with another series of commands'
+
+components:
+  schemas:
+    
