@@ -10,6 +10,8 @@ actix-web = "4"
 serde = { version = "1", features = ["derive"] }
 env_logger = "0.8"
 log = "0.4"
+sentry = "0.30.0"
+sentry-actix = "0.30.0"
 
 [dev-dependencies]
 #utoipa-swagger-ui = "3"

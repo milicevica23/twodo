@@ -1,8 +1,9 @@
-use actix_web::{get, web, middleware::Logger,App, HttpResponse, HttpServer, Responder,Result};
+use actix_web::{get, web, middleware::Logger,App,HttpResponse, HttpServer, Responder,Result};
 use std::sync::Mutex;
 use serde::Deserialize;
 use log::info;
 use env_logger::Env;
+use std::io;
 
 
 struct AppStateWithCounter {
@@ -29,22 +30,27 @@ async fn index(info: web::Path<Info>) -> Result<String> {
 async fn hello(data: web::Data<AppStateWithCounter>) -> impl Responder {
     let mut counter = data.counter.lock().unwrap();
     *counter += 1; // <- access counter inside MutexGuard
-
+    //Err(io::Error::new(io::ErrorKind::Other, format!("Request number: {counter}")).into())
+    panic!("Everything is on fire!");
     HttpResponse::Ok().body(format!("Request number: {counter}"))
 }
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let counter = web::Data::new(AppStateWithCounter {
         counter: Mutex::new(0),
     });
-    env_logger::init_from_env(Env::default().default_filter_or("info"));
-
+    let _guard = sentry::init(("*", sentry::ClientOptions {
+        release: sentry::release_name!(),
+        ..Default::default()
+    }));
+    std::env::set_var("RUST_BACKTRACE", "1");
     info!("{}", "error test");
     HttpServer::new(move || {
-        let logger = Logger::default();
         App::new()
         .wrap(Logger::default())
             .app_data(counter.clone())
+            .wrap(sentry_actix::Sentry::new())
             .service(hello)
             .service(index)
             
