@@ -16,6 +16,8 @@
 - [ ] log
 - [ ] [tokio](https://github.com/tokio-rs/tokio)
 - [ ] chrono
+- [ ] [minijinja](https://github.com/mitsuhiko/minijinja)
+- [ ] [reqwest](https://docs.rs/reqwest/latest/reqwest/)
 
 ## Web Framework
 - [ ] [actix-web](https://github.com/actix/actix-web)
